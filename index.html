@@ -287,7 +287,7 @@ footer .gold{background:var(--gg);-webkit-background-clip:text;background-clip:t
  <div class="seal"><div class="ring">
   <div class="gn2" aria-hidden="true"></div>
   <p class="dev" style="font-size:1.3rem">श्री गणेशाय नमः</p>
-  <small>The Sharma &amp; Verma families<br>cordially invite you to the wedding of</small>
+  <small id="cvFam"></small>
   <p class="nm gold" id="cvNames">Aarav &amp; Isha</p>
   <button class="btn" id="openBtn" type="button">TAP TO OPEN</button>
  </div></div>
@@ -313,12 +313,12 @@ footer .gold{background:var(--gg);-webkit-background-clip:text;background-clip:t
   <div class="in-w"><div class="gn rv" aria-hidden="true"></div><p class="dev" style="color:#a87a22;font-size:1.4rem;margin:.2rem 0 1rem">श्री गणेशाय नमः</p>
    <div class="scroll"><div class="roll"></div><div class="paper">
     <svg class="fl"><use href="#flw"/></svg>
-    <h2>Chi. Aarav Sharma</h2><p class="sub">Son of Shri Ramesh Sharma &amp; Smt. Sunita Sharma</p><p class="sub">Grandson of Late Shri Mohan Sharma &amp; Late Smt. Kamla Devi</p>
+    <h2 id="gName"></h2><div id="gSub"></div>
    </div><div class="roll"></div></div>
    <p class="gold" style="font-family:'Great Vibes',cursive;font-size:3rem;line-height:1">&amp;</p>
    <div class="scroll"><div class="roll"></div><div class="paper">
     <svg class="fl"><use href="#flw"/></svg>
-    <h2>Kum. Isha Verma</h2><p class="sub">Daughter of Shri Rajesh Verma &amp; Smt. Meera Verma</p><p class="sub">Granddaughter of Late Shri Hari Prasad Verma &amp; Late Smt. Shanti Devi</p>
+    <h2 id="bName"></h2><div id="bSub"></div>
    </div><div class="roll"></div></div>
   </div>
  </section>
@@ -326,8 +326,8 @@ footer .gold{background:var(--gg);-webkit-background-clip:text;background-clip:t
  <section class="story lt">
   <div class="in-w rv">
    <h2 class="sec gold">Our story</h2><div class="rule"></div>
-   <p>Some stories begin with grand gestures. Ours began with a simple conversation, and grew into the best part of every day.</p>
-   <div class="photos"><div class="ph"><div>Your photo here</div></div><div class="ph"><div>Your photo here</div></div><div class="ph"><div>Your photo here</div></div><div class="ph"><div>Your photo here</div></div></div>
+   <p id="storyTxt"></p>
+   <div class="photos" id="photos"></div>
   </div>
  </section>
 
@@ -340,7 +340,7 @@ footer .gold{background:var(--gg);-webkit-background-clip:text;background-clip:t
 
  <section class="rsvp lt"><div class="in-w rv">
   <h2 class="sec gold">RSVP</h2><div class="rule"></div>
-  <p>Kindly reply by 1 February 2027</p>
+  <p id="rsvpBy"></p>
   <div class="box">
    <label for="rn">Your name</label><input id="rn" type="text" placeholder="Full name" autocomplete="name">
    <label>Will you join us?</label>
@@ -358,16 +358,26 @@ footer .gold{background:var(--gg);-webkit-background-clip:text;background-clip:t
    <div class="gn" aria-hidden="true"></div>
    <h2 class="gold">Your presence means the world</h2>
    <p class="dev" style="margin:.6rem 0">आपकी उपस्थिति हमारा सौभाग्य है</p>
-   <p>With best compliments from the Sharma &amp; Verma families</p>
+   <p id="ftFam"></p>
   </div>
  </footer>
 </main>
 
 <button id="musicBtn" type="button" aria-label="Mute music" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z" fill="currentColor" stroke="none"/><path class="on" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/><path class="off" d="M16 9.5l5 5M21 9.5l-5 5"/></svg></button>
 <script>
-/* ===== Edit these details ===== */
+/* ===== Edit these details =====
+   Sirf is block ko badalna hai. Ek cheez alag: file ke upar <title> tag me bhi naam badal dena (WhatsApp link preview wahi dikhata hai). */
 const W = {
   groom:"Aarav", bride:"Isha", city:"Aligarh, Uttar Pradesh",
+  families:"Sharma & Verma",            // cover aur footer me "The ___ families"
+  groomName:"Chi. Aarav Sharma",
+  groomFamily:["Son of Shri Ramesh Sharma & Smt. Sunita Sharma","Grandson of Late Shri Mohan Sharma & Late Smt. Kamla Devi"],
+  brideName:"Kum. Isha Verma",
+  brideFamily:["Daughter of Shri Rajesh Verma & Smt. Meera Verma","Granddaughter of Late Shri Hari Prasad Verma & Late Smt. Shanti Devi"],
+  story:"Some stories begin with grand gestures. Ours began with a simple conversation, and grew into the best part of every day.",
+  photos:[],                            // 4 photo links ya file ke naam, jaise ["p1.jpg","p2.jpg","p3.jpg","p4.jpg"]. Khaali = placeholder
+  rsvpBy:"1 February 2027",
+  music:"song.mp3",                     // mp3 ka naam (isi folder me). Khaali = built-in dhun
   wa:"919999999999", // RSVP WhatsApp number (country code + number, no + or spaces)
   date:"2027-02-13T20:00:00+05:30",
   events:[
@@ -382,6 +392,16 @@ const W = {
 /* ============================== */
 const $=id=>document.getElementById(id), T=new Date(W.date);
 $("cvNames").textContent=W.groom+" & "+W.bride;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+document.title=W.groom+" & "+W.bride+" – Wedding Invitation";
+$("cvFam").innerHTML="The "+esc(W.families)+" families<br>cordially invite you to the wedding of";
+$("ftFam").textContent="With best compliments from the "+W.families+" families";
+$("gName").textContent=W.groomName;$("bName").textContent=W.brideName;
+$("gSub").innerHTML=W.groomFamily.map(l=>'<p class="sub">'+esc(l)+'</p>').join("");
+$("bSub").innerHTML=W.brideFamily.map(l=>'<p class="sub">'+esc(l)+'</p>').join("");
+$("storyTxt").textContent=W.story;
+$("rsvpBy").textContent="Kindly reply by "+W.rsvpBy;
+$("photos").innerHTML=[0,1,2,3].map(i=>{const u=(W.photos||[])[i];return u?'<div class="ph"><div style="background:url(\''+encodeURI(u)+'\') center/cover no-repeat;font-size:0">Photo</div></div>':'<div class="ph"><div>Your photo here</div></div>'}).join("");
 const L=(s,o)=>[...s].map((c,i)=>'<i class="ch" style="--i:'+(i+o)+'">'+c+'</i>').join("");
 $("heroNames").innerHTML=L(W.groom,0)+"<span>&amp;</span>"+L(W.bride,W.groom.length+1);
 $("heroCity").textContent=W.city.toUpperCase();
@@ -412,9 +432,9 @@ function rsvp(){const n=$("rn").value.trim(),g=$("rg").value,y=document.querySel
 $("openBtn").addEventListener("click",()=>{const c=$("cover");c.classList.add("open");document.body.classList.remove("locked");hero.classList.add("go");burst();setTimeout(()=>c.classList.add("gone"),1600)});
 
 /* ===== Wedding music =====
-   Apna pasandida gaana lagana ho to mp3 isi folder me rakho aur likho: MUSIC_FILE="gaana.mp3"
+   Apna pasandida gaana lagana ho to mp3 isi folder me rakho aur likho: music:"gaana.mp3" (file ke upar W block me)
    Khaali chhodo to built-in romantic dhun (piano + bansuri) bajegi. */
-const MUSIC_FILE="song.mp3";
+const MUSIC_FILE=W.music||"";
 const MU={on:false,ctx:null,audio:null,timer:null,gain:null,step:0,next:0};
 const ST=.5, SA=293.66, fq=n=>SA*Math.pow(2,n/12);
 const CH=[{b:-12,a:[-5,0,4,7]},{b:-15,a:[-8,-3,0,4]},{b:-19,a:[-7,-3,0,5]},{b:-17,a:[-5,-1,2,7]}];
